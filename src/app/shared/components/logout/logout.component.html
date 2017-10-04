@@ -1,0 +1,10 @@
+<span *ngIf="errors.length < 1">
+  <a (click)="logout()">
+    <md-icon class="md-18">{{mdIcon}}</md-icon>
+  </a>
+</span>
+
+<span *ngIf="errors.length > 0">
+  <md-error *ngFor="let error of errors">{{error.cod}} - {{error.message}}</md-error>
+</span>
+  

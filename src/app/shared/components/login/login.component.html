@@ -1,0 +1,59 @@
+<md-card id="ntm-login">
+  <div class="div-title">
+    <div class="float-left div-form-pattern mr20">
+        <img src="./../assets/img/fiea.png" alt="" id="senai-icon" class="w160">
+    </div>
+
+    <div class="float-left div-form-pattern mr20 h2-title">
+      <h2>Acesso</h2>
+    </div>
+    <div class="float-right mt15">
+      <md-icon>help</md-icon>
+    </div>
+  </div>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()"
+  *ngIf="errors.length < 1">
+    <md-card-content>
+      <div class="float-left h70">
+        <div class="float-left div-form-pattern">
+          <md-icon class="md-18">person</md-icon>
+        </div>
+        <div class="float-left mr10 div-form-pattern w290">
+          <md-input-container>
+              <input mdInput formControlName="email" type="text"
+              placeholder="E-mail" maxlength="191">
+          </md-input-container>
+        </div>
+      </div>
+
+      <div class="float-left h70">
+        <div class="float-left div-form-pattern">
+          <md-icon class="md-18">lock_open</md-icon>
+        </div>
+        <div class="float-left  div-form-pattern w290">
+          <md-input-container>
+            <input mdInput formControlName="password" type="password"
+            placeholder="Password" maxlength="191">
+          </md-input-container>
+        </div>
+      </div>
+      <div class="clear-both"></div>
+    </md-card-content>
+
+    <md-card-actions>
+
+      <button style="margin-right:16px;" md-raised-button type="submit"
+      color="primary" [disabled]="!loginForm.valid">
+        Entrar
+      </button>
+
+      <a md-button (click)="onForgotPassword()"
+      *ngIf="params.forgotPasswordRoute">Esqueci a senha</a>
+    </md-card-actions>  
+
+  </form>
+
+  <div *ngFor="let error of errors">
+    <md-error>{{ error.cod }} - {{ error.message }}</md-error>
+  </div>
+</md-card>

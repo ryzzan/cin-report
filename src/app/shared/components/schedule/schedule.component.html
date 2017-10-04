@@ -1,0 +1,156 @@
+<md-card class="mt10">
+  <form [formGroup]="scheduleForm" (ngSubmit)="onSubmit()">
+    <div class="div-form-pattern" *ngIf="!chooseSortOfDate">
+      <button md-raised-button type="button" color="primary" (click)="onNewDate()">Adicionar agendamento</button>
+    </div>
+
+    <div class="div-form-pattern" *ngIf="chooseSortOfDate">
+      <div class="float-left mr10 div-form-pattern">
+        <button md-raised-button type="button" color="primary" (click)="onAddDateCounting()">Adicionar dia</button>
+      </div>
+
+      <div class="float-left mr10 div-form-pattern">
+        <button md-raised-button type="button" color="primary" (click)="onAddIntervalCounting()">Adicionar intervalo</button>
+      </div>
+
+      <div class="clear-both"></div>
+    </div>
+
+    <div *ngIf="chooseDate">
+      <md-form-field>
+        <input mdInput [mdDatepicker]="picker" placeholder="Escolha uma data" formControlName="date"
+        (dateChange)="onAddDateValue(i)">
+        <md-datepicker-toggle mdSuffix [for]="picker"></md-datepicker-toggle>
+        <md-datepicker #picker></md-datepicker>
+      </md-form-field>
+    </div>
+
+    <div *ngIf="chooseTime">
+      <div class="float-left mr10 div-form-pattern">
+        <md-input-container>
+          <input mdInput formControlName="timeStart" type="text"
+          [textMask]="{mask: mask.time}"
+          placeholder="Hora de início">
+        </md-input-container>
+      </div>
+
+      <div class="float-left mr10 div-form-pattern">
+        <md-input-container>
+          <input mdInput formControlName="timeEnd" type="text"
+          [textMask]="{mask: mask.time}"
+          placeholder="Hora de término"
+          (keyup)="onAddTimeValue(i)">
+        </md-input-container>
+      </div>
+
+      <div class="clear-both"></div>
+    </div>
+
+    <div *ngIf="datesCounting.length && datesCounting.length > 0">
+      <div *ngFor="let date of dateObject; let i = index;">
+        <table>
+          <tr>
+            <td>
+              {{date.date}}<br>
+              <button md-raised-button type="button" color="accent" (click)="onAddDateTimeCounting(i)">Adicionar Horários</button>
+            </td>
+            
+            <td>
+              <md-icon (click)="onRemoveDate(i)">clear</md-icon>
+            </td>
+
+            <td>
+                <div *ngFor="let timeTimes of dateObject.timeTimes; let i = index;">
+                  {{timeTimes.timeTimes}}
+                </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    
+    <!--<div *ngIf="scheduleForm.get('dates.datesArray').controls" formGroupName="dates">
+      <div>
+        <div formArrayName="datesArray" class="float-left">
+          <div *ngFor="let dateControl of scheduleForm.get('dates.datesArray')?.controls; let i = index;">
+            <div class="float-left mr10 div-form-pattern">
+              <md-form-field>
+                <input mdInput [mdDatepicker]="picker" placeholder="Escolha uma data" [formControlName]="i">
+                <md-datepicker-toggle mdSuffix [for]="picker"></md-datepicker-toggle>
+                <md-datepicker #picker></md-datepicker>
+              </md-form-field>  
+            </div>
+
+            <div class="float-left div-form-pattern"><md-icon (click)="onRemoveDate(i)">clear</md-icon></div>
+
+            <div class="clear-both"></div>
+
+            <div class="div-form-pattern">
+              <button md-raised-button type="button" color="accent" (click)="onAddDateTime(index)">Adicionar Horários</button>
+            </div>
+          </div>
+        </div>
+
+        <div formArrayName="timesArray" class="float-left">
+          <div *ngFor="let dateTimeControl of scheduleForm.get('dates.timesArray')?.controls; let j = index;">
+            <div class="float-left mr10 div-form-pattern">
+              <md-input-container>
+                <input mdInput [formControlName]="j" type="text"
+                [textMask]="{mask: mask.time}"
+                placeholder="Hora de início">
+              </md-input-container>
+            </div>
+
+            <div class="float-left mr10 div-form-pattern">
+              <md-input-container>
+                <input mdInput [formControlName]="j" type="text"
+                [textMask]="{mask: mask.time}"
+                placeholder="Hora de término">
+              </md-input-container>
+            </div>
+
+            <div class="clear-both"></div>
+          </div>
+        </div>
+
+        <div class="clear-both"></div>
+      </div>
+    </div>
+
+    <div *ngIf="scheduleForm.get('intervals.datesArray')?.controls" formGroupName="intervals">
+      <div formArrayName="intervalsArray">
+        <div *ngIf="scheduleForm.get('intervals').controls" formGroupName="intervals">
+          <div *ngFor="let intervalControl of scheduleForm.get('intervals').controls; let j = index;">
+            <div class="float-left mr10 div-form-pattern">
+              <md-form-field>
+                <input mdInput [mdDatepicker]="intervalStartPicker" placeholder="Escolha a data de início" [formControlName]="intervalStart">
+                <md-datepicker-toggle mdSuffix [for]="intervalStartPicker"></md-datepicker-toggle>
+                <md-datepicker #intervalStartPicker></md-datepicker>
+              </md-form-field>  
+            </div>
+
+            <div class="float-left mr10 div-form-pattern">
+                <md-form-field>
+                  <input mdInput [mdDatepicker]="intervalEndPicker" placeholder="Escolha a data de término" [formControlName]="intervalEnd">
+                  <md-datepicker-toggle mdSuffix [for]="intervalEndPicker"></md-datepicker-toggle>
+                  <md-datepicker #intervalEndPicker></md-datepicker>
+                </md-form-field>  
+              </div>
+
+            <div class="float-left mr10 div-form-pattern">
+              <md-input-container>
+                <input mdInput [formControlName]="timeStart" type="text"
+                [textMask]="{mask: mask.time}"
+                placeholder="Hora de início">
+              </md-input-container>
+            </div>
+
+            <div class="float-left div-form-pattern"><md-icon (click)="onRemoveInterval(i)">clear</md-icon></div>
+
+            <div class="clear-both"></div>
+          </div>
+        </div>
+      </div>
+    </div>-->
+  </form>    
+</md-card>

@@ -1,0 +1,27 @@
+<md-card class="mt10">
+  <h2><b>{{title}}</b></h2>
+  
+  <hr>
+  
+  <form (ngSubmit)="onInstitutionSubmit()" [formGroup]="mainForm">
+    <div class="float-left mr10 div-form-pattern">
+      <div class="float-left">
+        <md-icon>person</md-icon>
+      </div>
+      <md-input-container>
+        <input mdInput type="text" placeholder="Nome"
+        formControlName="institution_name" maxlength="191">
+      </md-input-container>
+    </div>
+
+    <div class="clear-both"></div>
+
+    <md-card-actions>
+      <button md-raised-button type="submit" color="primary" [disabled]="!mainForm.valid">{{submitButton}}</button>
+    </md-card-actions>
+  </form>
+</md-card>
+
+<div class="list mt10">
+  <ntm-table-data [params]="paramsToTableData"></ntm-table-data>
+</div>

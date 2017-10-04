@@ -1,0 +1,20 @@
+md-input-container {
+    width: 100%;
+}
+
+.spacer {
+    flex: 1 1 auto;
+}
+md-card-actions>a,
+md-card-actions>button{
+    float: right;
+}
+
+.div-title{
+    margin-bottom: 70px;
+}
+
+.h2-title{
+    font-weight: bold;
+    line-height: 32px;
+}
