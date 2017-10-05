@@ -203,8 +203,6 @@ export class TableDataComponent implements OnInit {
             where: this.searchForm.get('searchSelect').value,
             value: this.searchForm.get('search').value
           })
-
-          console.log(this.searchValue)
         } else {
           for(let lim = this.params.list.show.length, i = 0; i < lim; i++) {
             this.searchValue.push({
@@ -421,11 +419,13 @@ export class TableDataComponent implements OnInit {
       page: this.pageCurrent,
       search: this.searchValue
     }
+    console.log(readParams)
 
     this.isLoadingList = true;
 
     this.crud.read(readParams)
     .then(res => {
+      console.log(res)
       this.isLoadingList = false;
       
       if(res['obj']) {

@@ -1,0 +1,52 @@
+.clear-both {
+    clear: both;
+}
+
+.clear-icon {
+    cursor: pointer;
+    font-size: small;
+    float: left;
+}
+
+.color-item {
+    background-color: #7ED3DF;
+}
+
+.item-size {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
+.object {
+    float: left;
+    width: 70%;
+}
+
+md-chip {
+    max-width: 200px;
+}
+
+#add-button {
+    float: left;
+    cursor: pointer;
+}
+
+#form {
+    float: left;
+}
+
+#list-item {
+    display: block;
+    cursor: pointer;
+}
+
+#list-toggle {
+    max-height: 200px;
+    width: 150px;
+    line-height: 200%;
+    overflow: hidden;
+    position: absolute;
+    z-index: 999;
+}

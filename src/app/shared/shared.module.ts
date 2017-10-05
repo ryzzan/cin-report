@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MdDatepickerModule, MdNativeDateModule, MdCardModule, MdDialogModule, MdSelectModule, MdCheckboxModule,
+import { MdAutocompleteModule, MdChipsModule, MdDatepickerModule, MdNativeDateModule, MdCardModule, MdDialogModule, MdSelectModule, MdCheckboxModule,
   MdInputModule,MatSnackBarModule, MdIconModule, MdButtonModule, MatSlideToggleModule,MdToolbarModule, MdProgressBarModule } from '@angular/material';
 import { Routes, RouterModule } from '@angular/router';
 
@@ -12,6 +12,7 @@ import { DeleteConfirmComponent } from './components/delete-confirm/delete-confi
 import { LoginComponent } from './components/login/login.component';
 import { LogoutComponent } from './components/logout/logout.component';
 import { MenuSidenavComponent } from './components/menu-sidenav/menu-sidenav.component';
+import { MultipleSelectComponent } from './components/multiple-select/multiple-select.component';
 import { TableDataComponent } from './components/table-data/table-data.component';
 import { ScheduleComponent } from './components/schedule/schedule.component';
 
@@ -24,7 +25,6 @@ import { AuthGuard } from './guards/auth.guard';
  * Modules
  */
 import { TextMaskModule } from 'angular2-text-mask';
-
 /**
  * Services
  */
@@ -34,9 +34,8 @@ import { CrudService } from './services/array/crud.service';
 @NgModule({
   imports: [
     CommonModule,
-    TextMaskModule,
-    ReactiveFormsModule,
     MdCardModule,
+    MdChipsModule,
     MdDatepickerModule,
     MdDialogModule,
     MdSelectModule,
@@ -47,13 +46,16 @@ import { CrudService } from './services/array/crud.service';
     MdProgressBarModule,
     MdButtonModule,
     MatSlideToggleModule,
-    MdToolbarModule
+    MdToolbarModule,
+    ReactiveFormsModule,
+    TextMaskModule
   ],
   exports:[
     DeleteConfirmComponent,
     LoginComponent,
     LogoutComponent,
     MdCardModule,
+    MdChipsModule,
     MdDatepickerModule,
     MdDialogModule,
     MdSelectModule,
@@ -65,18 +67,20 @@ import { CrudService } from './services/array/crud.service';
     MdProgressBarModule,
     MdButtonModule,
     MenuSidenavComponent,
-    TableDataComponent,
-    ScheduleComponent,
     MatSlideToggleModule,
-    MdToolbarModule
+    MdToolbarModule,
+    MultipleSelectComponent,
+    ScheduleComponent,
+    TableDataComponent
   ],
   declarations: [
     DeleteConfirmComponent,
     LoginComponent,
     LogoutComponent,
     MenuSidenavComponent,
-    TableDataComponent,
-    ScheduleComponent
+    MultipleSelectComponent,
+    ScheduleComponent,
+    TableDataComponent
   ],
   providers: [
     AuthenticationService,

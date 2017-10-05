@@ -29,19 +29,5 @@ export class MainComponent implements OnInit {
         route: ['/main/schedule']
       }]
     }
-
-    this.setCompetitionsObject();
-  }
-
-  setCompetitionsObject = () => {
-    let params = {
-      route: 'competitions',
-      order: ['name', 'asc']
-    };
-
-    this.crud.read(params)
-    .then(res => {
-      this.competitionsObject = res['obj'];
-    })
   }
 }

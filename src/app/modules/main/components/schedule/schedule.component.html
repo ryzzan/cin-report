@@ -1,18 +1,32 @@
 <md-card class="mt10">
-  <h2><b>{{title}}</b></h2>
-  
+  <h2><b>{{title}}</b></h2>  
   <hr>
   
   <form (ngSubmit)="onScheduleSubmit()" [formGroup]="mainForm">
-    <!--<md-form-field class="example-full-width">
-      <input type="text" placeholder="Vendedor" aria-label="Vendedor" mdInput 
-      [formControl]="sellet" [mdAutocomplete]="auto">
-      <md-autocomplete #auto="mdAutocomplete">
-        <md-option *ngFor="let option of buyerArray | async" [value]="option">
-          {{ option.participant.business_name }}
-        </md-option>
-      </md-autocomplete>
-    </md-form-field>-->
+    <div class="float-left mr10 div-form-pattern">
+      <div class="float-left">
+        <md-icon>person</md-icon>
+      </div>
+      <div class="float-left">
+        <ntm-multiple-select 
+        [params]="paramsToSellerMultipleSelect"
+        (multipleSelectEventEmitter)="sellerMultipleSelectEventEmitterHandle($event)">
+        </ntm-multiple-select>
+      </div>
+    </div>
+
+    <!--<div class="float-left mr10 div-form-pattern">
+      <div class="float-left">
+        <md-icon>person</md-icon>
+      </div>
+      <div class="float-left">
+        <ntm-multiple-select 
+        [params]="paramsToBuyerMultipleSelect">
+        </ntm-multiple-select>
+      </div>
+    </div>-->
+    
+    <div class="clear-both"></div>
     <!--<div class="float-left mr10 div-form-pattern">
       <div class="float-left">
         <md-icon>person</md-icon>

@@ -131,12 +131,12 @@ export class CrudService {
         environment.urlToApi + params.route, // + setGet + page +  show + hide + limit + order + search,
         this.optionsToAuth
       )
-      .subscribe(res => { console.log(res)
+      .subscribe(res => { 
         obj = JSON.parse(res['_body']);
 
         objFilteredTemp = obj;        
-        console.log(objFilteredTemp)
-        if(order) {
+        
+        if(order.length > 0) {
           if(order[1] === 'desc') {
             if(order[0].length > 1) {
               objFiltered = this.propertyFromMatrix(obj, order[0], order[1], search);
@@ -308,11 +308,11 @@ export class CrudService {
       let tempLoopToSearch = [];
       let tempLoopToSearch2;
       let tempToSearch = [];
-
+      
       for(let lim = object.length, i = 0; i < lim; i++) {    
         //Montando busca a partir dos campos definidos como where no paramêtro search início
-        for(let lim = search[0].length, j = 0; j < lim; j++) {
-          for(let lim2 = search[0][j].where.length, k = 0; k < lim2; k++) {
+        for(let lim2 = search[0].length, j = 0; j < lim2; j++) {
+          for(let lim3 = search[0][j].where.length, k = 0; k < lim3; k++) {
             if(tempLoopToSearch.length < 1) {
               tempLoopToSearch = object[i][search[0][j].where[k]];
             } else {
@@ -344,7 +344,6 @@ export class CrudService {
       //Montando novo objeto a parti dos resultados iniciais da pesquisa início
       for(let lim = searchFilteredResults.length, i = 0; i < lim; i++) {
         for(let lim2 = object.length, j = 0; j < lim2; j++) {
-          console.log(searchFilteredResults[i])
           if(searchFilteredResults[i] == object[j]['id']) {
             if(searchFilteredResults[i] != searchFilteredResults[i - 1]) { //in case there are more than one result to same json array
               searchObject.push(object[j]);
@@ -378,8 +377,6 @@ export class CrudService {
         field: tempLoop, 
         id: object[i]['id']
       });
-
-      console.log(temp)
       
       if(order == "asc") {
         for(let lim3 = temp.length, k = 1; k < lim3; k++) {
