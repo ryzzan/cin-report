@@ -56,10 +56,12 @@ export class CrudService {
 
     if(params) {
       if(!params.route) {
-        reject({
-          cod: "r-01",
-          message: 'Defina a rota de pesquisa (route: string)'
-        })
+        if(!params.array) {
+          reject({
+            cod: "r-01",
+            message: 'Defina a rota de pesquisa ou envie uma array para a listagem (route: string || array: any)'
+          })
+        }
       }
 
       if(params.show && params.hide) {
@@ -127,77 +129,147 @@ export class CrudService {
         'headers': this.headersToAuth
       })
 
-      this.http.get(
-        environment.urlToApi + params.route, // + setGet + page +  show + hide + limit + order + search,
-        this.optionsToAuth
-      )
-      .subscribe(res => { 
-        obj = JSON.parse(res['_body']);
-
-        objFilteredTemp = obj;        
-        
-        if(order.length > 0) {
-          if(order[1] === 'desc') {
-            if(order[0].length > 1) {
-              objFiltered = this.propertyFromMatrix(obj, order[0], order[1], search);
+      if(params.array) {
+        if(params.array != "" && params.array != undefined) {
+          obj = params.array;
+          objFilteredTemp = obj;
+          
+          if(order.length > 0) {
+            if(order[1] === 'desc') {
+              if(order[0].length > 1) {
+                objFiltered = this.propertyFromMatrix(obj, order[0], order[1], search);
+              } else {
+                objFiltered = obj.sort();
+              }
             } else {
-              objFiltered = obj.sort();
+              if(order[0].length > 1) {
+                objFiltered = this.propertyFromMatrix(obj, order[0], order[1], search);
+              } else {
+                objFiltered = obj.sort();
+              }
             }
-          } else {
-            if(order[0].length > 1) {
-              objFiltered = this.propertyFromMatrix(obj, order[0], order[1], search);
-            } else {
-              objFiltered = obj.sort();
-            }
+  
+            obj = objFiltered;
+            totalForPagination = objFiltered.length;
+  
+            finalLimit = Math.ceil(totalForPagination/params.limit)
           }
-
-          obj = objFiltered;
-          totalForPagination = objFiltered.length;
-
-          finalLimit = Math.ceil(totalForPagination/params.limit)
+          
+          if(limit) {
+            let temp = [];
+            let arrayStart;
+            let arrayEnd;
+            
+            objFiltered = [];
+            
+            if(params.page < 2) {
+              if(totalForPagination >= params.limit) {
+                arrayStart = params.page - 1;
+                arrayEnd = params.limit;
+              } else if(totalForPagination < params.limit && totalForPagination > 0){
+                arrayStart = params.page - 1;
+                arrayEnd = obj.length;
+  
+                objFilteredTemp = obj;
+              } else {
+                console.log("sem resultado")
+              }
+            } else if(params.page < finalLimit) {
+              arrayStart = (params.page * params.limit - params.limit);
+              arrayEnd = params.page * params.limit;
+            } else {
+              arrayStart = (params.page * params.limit - params.limit);
+              arrayEnd = totalForPagination;
+            }
+  
+            for(let lim = arrayEnd, i = arrayStart; i < lim; i++) {       
+              objFiltered.push(obj[i]);
+            }
+            
+            obj = objFiltered;
+          }
+          
+          obj.total = totalForPagination;
+          obj.totaNoFilter = objFilteredTemp.length;
+  
+          resolve({
+            obj
+          });
         }
-
-        if(limit) {
-          let temp = [];
-          let arrayStart;
-          let arrayEnd;
-          
-          objFiltered = [];
-          
-          if(params.page < 2) {
-            if(totalForPagination >= params.limit) {
-              arrayStart = params.page - 1;
-              arrayEnd = params.limit;
-            } else if(totalForPagination < params.limit && totalForPagination > 0){
-              arrayStart = params.page - 1;
-              arrayEnd = obj.length;
-
-              objFilteredTemp = obj;
-            } else {
-              console.log("sem resultado")
+      } else {
+        this.http.get(
+          environment.urlToApi + params.route, // + setGet + page +  show + hide + limit + order + search,
+          this.optionsToAuth
+        )
+        .subscribe(res => { 
+          if(res['_body'] != "" && res['_body'] != undefined) {
+            obj = JSON.parse(res['_body']);
+            objFilteredTemp = obj;
+            
+            if(order.length > 0) {
+              if(order[1] === 'desc') {
+                if(order[0].length > 1) {
+                  objFiltered = this.propertyFromMatrix(obj, order[0], order[1], search);
+                } else {
+                  objFiltered = obj.sort();
+                }
+              } else {
+                if(order[0].length > 1) {
+                  objFiltered = this.propertyFromMatrix(obj, order[0], order[1], search);
+                } else {
+                  objFiltered = obj.sort();
+                }
+              }
+    
+              obj = objFiltered;
+              totalForPagination = objFiltered.length;
+    
+              finalLimit = Math.ceil(totalForPagination/params.limit)
             }
-          } else if(params.page < finalLimit) {
-            arrayStart = (params.page * params.limit - params.limit);
-            arrayEnd = params.page * params.limit;
-          } else {
-            arrayStart = (params.page * params.limit - params.limit);
-            arrayEnd = totalForPagination;
+    
+            if(limit) {
+              let temp = [];
+              let arrayStart;
+              let arrayEnd;
+              
+              objFiltered = [];
+              
+              if(params.page < 2) {
+                if(totalForPagination >= params.limit) {
+                  arrayStart = params.page - 1;
+                  arrayEnd = params.limit;
+                } else if(totalForPagination < params.limit && totalForPagination > 0){
+                  arrayStart = params.page - 1;
+                  arrayEnd = obj.length;
+    
+                  objFilteredTemp = obj;
+                } else {
+                  console.log("sem resultado")
+                }
+              } else if(params.page < finalLimit) {
+                arrayStart = (params.page * params.limit - params.limit);
+                arrayEnd = params.page * params.limit;
+              } else {
+                arrayStart = (params.page * params.limit - params.limit);
+                arrayEnd = totalForPagination;
+              }
+    
+              for(let lim = arrayEnd, i = arrayStart; i < lim; i++) {       
+                objFiltered.push(obj[i]);
+              }
+              
+              obj = objFiltered;
+            }
+            
+            obj.total = totalForPagination;
+            obj.totaNoFilter = objFilteredTemp.length;
+    
+            resolve({
+              obj
+            });
           }
-
-          for(let lim = arrayEnd, i = arrayStart; i < lim; i++) {       
-            objFiltered.push(obj[i]);
-          }
-          
-          obj = objFiltered;
-        }
-        
-        obj.total = totalForPagination;
-        obj.totaNoFilter = objFilteredTemp.length;
-
-        resolve({
-          obj
-        });
-      })
+        })
+      }
     } else {
       reject({
         cod: "p-01",
@@ -363,7 +435,7 @@ export class CrudService {
     for(let lim = object.length, i = 0; i < lim; i++) {
       let tempLoop;
       let tempLoop2;
-      
+
       for(let lim2 = property.length, j = 0; j < lim2; j++) {
         if(tempLoop == undefined) {          
           tempLoop = object[i][property[j]];

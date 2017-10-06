@@ -15,16 +15,27 @@
       </div>
     </div>
 
-    <!--<div class="float-left mr10 div-form-pattern">
+    <div class="float-left mr10 div-form-pattern" *ngIf="paramsToBuyerMultipleSelect">
       <div class="float-left">
         <md-icon>person</md-icon>
       </div>
       <div class="float-left">
         <ntm-multiple-select 
-        [params]="paramsToBuyerMultipleSelect">
+        [(params)]="paramsToBuyerMultipleSelect">
         </ntm-multiple-select>
       </div>
-    </div>-->
+    </div>
+
+    <div class="float-left mr10 div-form-pattern" *ngIf="paramsToWindowMultipleSelect">
+      <div class="float-left">
+        <md-icon>person</md-icon>
+      </div>
+      <div class="float-left">
+        <ntm-multiple-select 
+        [(params)]="paramsToWindowMultipleSelect">
+        </ntm-multiple-select>
+      </div>
+    </div>
     
     <div class="clear-both"></div>
     <!--<div class="float-left mr10 div-form-pattern">
@@ -45,6 +56,6 @@
   </form>
 </md-card>
 
-<div class="list mt10">
-  <!--<ntm-table-data [params]="paramsToTableData"></ntm-table-data>-->
+<div class="list mt20">
+  <ntm-table-data [params]="paramsToTableData" *ngIf="paramsToTableData"></ntm-table-data>
 </div>

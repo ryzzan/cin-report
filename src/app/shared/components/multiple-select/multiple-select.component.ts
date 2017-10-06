@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnChanges, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
 import {Observable} from 'rxjs/Observable';
@@ -15,7 +15,7 @@ import { CrudService } from './../../services/array/crud.service';
   templateUrl: './multiple-select.component.html',
   styleUrls: ['./multiple-select.component.css']
 })
-export class MultipleSelectComponent implements OnInit {
+export class MultipleSelectComponent implements OnChanges {
   @Input() params;
   @Output() multipleSelectEventEmitter: EventEmitter<any> = new EventEmitter<any>();
   errors: any = [];
@@ -29,6 +29,7 @@ export class MultipleSelectComponent implements OnInit {
   description: any;
   value: any;
   listArray: any = [];
+  matrixLevel: any;
   filteredList: any = [];
   itemCtrl: FormControl;
   order: any;
@@ -40,6 +41,7 @@ export class MultipleSelectComponent implements OnInit {
   checkUpAndDown: boolean = false;
   limitToDown: number = 0;
   filterByTerm: any;
+  completeObject: any = [];
 
   /**
    * Propriedades relacionadas a remoção de opções da listagem (opcional)
@@ -55,7 +57,7 @@ export class MultipleSelectComponent implements OnInit {
     private crud: CrudService
   ) { }
 
-  ngOnInit() {
+  ngOnChanges() {
     // Validações de parametros start
     if(!this.params){
       this.errors.push({
@@ -114,6 +116,10 @@ export class MultipleSelectComponent implements OnInit {
       if(this.params.order) {
         this.order = this.params.order;
       }
+
+      if(this.params.matrixLevelToStart) {
+        this.matrixLevel = this.params.matrixLevelToStart;
+      }
       // Validações de parametros end
 
       this.itemCtrl = new FormControl(null);
@@ -133,25 +139,53 @@ export class MultipleSelectComponent implements OnInit {
     }
     
     this.listArray = [];
+    
     this.crud.read(readParams)
     .then(res => {
       let description;
+      let matrix;
       let tempArray = [];
       let tempDescription;
       let tempDescription2;
+      let tempMatrix;
+      let tempMatrix2;
       let tempValue;
       let tempValue2;
       let value;
 
+      this.completeObject = [];
+      
       if(res['obj']) {
         tempArray.push(res['obj']);
+        this.completeObject.push(res['obj']);
       } else {
         tempArray.push(res);
+        this.completeObject.push(res);
+      }
+
+      if(this.matrixLevel) {
+        let tempToDestroyArray = [];
+
+        for(let lim = tempArray[0].length, i = 0; i < lim; i++){
+          for(let limToMatrix = this.matrixLevel.length, l = 0; l < limToMatrix; l++) {
+            if(tempMatrix == undefined) {          
+              tempMatrix = tempArray[0][i][this.matrixLevel[l]];
+            } else {
+              tempMatrix2 = tempMatrix[this.matrixLevel[l]];
+              tempMatrix = tempMatrix2;
+            } 
+          };
+        }
+        
+        matrix = tempMatrix;
+        
+        tempArray = [];
+        tempArray.push(matrix);
       }
       
       for(let lim = tempArray[0].length, i = 0; i < lim; i++){
         if(this.description.length && this.value.length) {
-          for(let lim2 = this.description.length, j = 0; j < lim2; j++) {
+          for(let limToDescription = this.description.length, j = 0; j < limToDescription; j++) {
             if(tempDescription == undefined) {          
               tempDescription = tempArray[0][i][this.description[j]];
             } else {
@@ -161,12 +195,12 @@ export class MultipleSelectComponent implements OnInit {
           };
 
           description = tempDescription;
-
-          for(let lim2 = this.value.length, j = 0; j < lim2; j++) {
+          
+          for(let limToValue = this.value.length, k = 0; k < limToValue; k++) {
             if(tempValue == undefined) {          
-              tempValue = tempArray[0][i][this.value[j]];
+              tempValue = tempArray[0][i][this.value[k]];
             } else {
-              tempValue2 = tempValue[this.value[j]];
+              tempValue2 = tempValue[this.value[k]];
               tempValue = tempValue2;
             } 
           };
@@ -177,6 +211,8 @@ export class MultipleSelectComponent implements OnInit {
             description: description,
             value: value
           })
+          tempDescription = undefined;
+          tempValue = undefined;
         } else {
           this.listArray.push({
             description: tempArray[0][i][this.description],
@@ -184,6 +220,7 @@ export class MultipleSelectComponent implements OnInit {
           })
         }
       }
+
       this.listArray = Object.keys(this.listArray).map(k => this.listArray[k]);
       this.filteredList = this.listArray;
       this.removeItemFromArray();
@@ -257,7 +294,7 @@ export class MultipleSelectComponent implements OnInit {
         if(this.choice == "multiple") {
           this.addButton = true;
         } else {
-          this.createSingleObject();
+          this.createSingleObject(this.filteredList[this.checkItemIndex]);
         }
       }
     }
@@ -284,7 +321,7 @@ export class MultipleSelectComponent implements OnInit {
     if(this.choice == "multiple") {
       this.addButton = true;
     } else {
-      this.createSingleObject();
+      this.createSingleObject(this.filteredList[index]);
     }
   }
 
@@ -292,11 +329,15 @@ export class MultipleSelectComponent implements OnInit {
     this.clearSearch();
     this.filterByTerm = setTimeout(() => {
       let arrayFiltered = this.filteredList;
+      
       if(event.target.value !== undefined || event.target.value !== ''){
+        
         arrayFiltered =  this.listArray.filter(snap => {
           return snap['description'].toLowerCase().includes(event.target.value.toLowerCase());
         })
+
         this.filteredList = arrayFiltered;
+        
         if(event.code != 'Escape' && this.filteredList.length > 0 && !this.addButton){
           this.showListToggle = true;
         }
@@ -337,9 +378,9 @@ export class MultipleSelectComponent implements OnInit {
    * Métodos relacionados a criação de array de objeto a partir das
    * escolhas da listagem
    */
-  createSingleObject = () => {
+  createSingleObject = (i) => {
     this.arrayOfObjects = [];
-    this.arrayOfObjects.push(this.itemCtrl.value);
+    this.arrayOfObjects.push({description: i.description, value: i.value});
     this.itemCtrl.setValue(undefined);
     this.addButton = false;
     this.makeList();
@@ -359,14 +400,5 @@ export class MultipleSelectComponent implements OnInit {
   removeItemFromObject = (index) => {
     this.arrayOfObjects.splice(index, 1);
     this.makeList();
-  }
-
-  teste = (i) => {
-    this.crud.read({
-      route: 'available-participant/'+this.filteredList[i]['value']
-    })
-    .then(res => {
-      console.log(res);
-    })
   }
 }

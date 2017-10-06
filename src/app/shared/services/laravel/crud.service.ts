@@ -7,7 +7,7 @@ import { environment } from './../../../../environments/environment';
 import { Observable } from 'rxjs/Observable';
 
 @Injectable()
-export class CrudService {
+export class LaravelCrudService {
   errors: any = [];
   headersToAuth: any;
   optionsToAuth: any;

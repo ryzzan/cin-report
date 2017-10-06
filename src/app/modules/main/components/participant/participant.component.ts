@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import createAutoCorrectedDatePipe from 'text-mask-addons/dist/createAutoCorrectedDatePipe.js'
 
 /*Services*/
-import { CrudService } from './../../../../shared/services/laravel/crud.service';
+import { CrudService } from './../../../../shared/services/array/crud.service';
 
 @Component({
   selector: 'app-participant',
@@ -162,34 +162,30 @@ export class ParticipantComponent implements OnInit {
       })
     })
 
-    this.crud.read({route: 'participants'})
-    .then(res => {
-      console.log(res)
-    })
-    //this.makeList();
+    this.makeList();
   }
 
-  /*makeList = () => {
+  makeList = () => {
     this.paramsToTableData = {
       toolbar: {
         title: "Lista de participantes",
         delete: [{
-          route: '/main/participat',
+          route: '/main/participant',
           param: 'id'
         }],
         search: true
       },
       list: {
-        route: "matchs",
-        show: ['cnpj'],
-        header: ['CNPJ'],
-        order: ['cnpj', 'desc'],
-        edit: {route: '/main/participat/', param: 'id'},
+        route: "participants-products",
+        show: [['participant','cnpj_number'], ['participant','business_name'], ['participant','tranding_name'], ['products','name']],
+        header: ['CNPJ', 'Razão Social', 'Nome Fantasia', 'Produtos'],
+        order: [['participant','business_name'], 'desc'],
+        edit: {route: '/main/participant/', param: 'id'},
         source: true
       },
       actionToolbar: {
         language: 'pt-br'
       }
     };
-  }*/
+  }
 }

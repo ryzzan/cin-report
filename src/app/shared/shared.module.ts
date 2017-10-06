@@ -30,6 +30,7 @@ import { TextMaskModule } from 'angular2-text-mask';
  */
 import { AuthenticationService } from './services/laravel/authentication.service';
 import { CrudService } from './services/array/crud.service';
+import { LaravelCrudService } from './services/laravel/crud.service';
 
 @NgModule({
   imports: [
@@ -85,7 +86,8 @@ import { CrudService } from './services/array/crud.service';
   providers: [
     AuthenticationService,
     AuthGuard,
-    CrudService
+    CrudService,
+    LaravelCrudService
   ],
   entryComponents: [
     DeleteConfirmComponent

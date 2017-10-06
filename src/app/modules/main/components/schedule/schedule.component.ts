@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 /*Services*/
 import { CrudService } from './../../../../shared/services/array/crud.service';
+import { LaravelCrudService } from './../../../../shared/services/laravel/crud.service';
 
 @Component({
   selector: 'app-schedule',
@@ -14,14 +15,18 @@ import { CrudService } from './../../../../shared/services/array/crud.service';
 export class ScheduleComponent implements OnInit {
   public buyerArray: any = [];
   public mainForm: FormGroup;
+  public matchArray: any = [];
   public paramsToBuyerMultipleSelect: any;
   public paramsToSellerMultipleSelect: any;
+  public paramsToWindowMultipleSelect: any;
   public paramsToTableData: any;
   public sellerArray: any = [];
+  public scheduleArray: any = [];
   public title: string = "Agendamentos";
 
   constructor(
-    private crud: CrudService
+    private crud: CrudService,
+    private laravelCrud: LaravelCrudService
   ) { }
 
   ngOnInit() {
@@ -37,7 +42,6 @@ export class ScheduleComponent implements OnInit {
     })
     .then(res => {
       this.buyerArray = res['obj'];
-      console.log(this.buyerArray.length)
     })
 
     this.crud.read({
@@ -47,7 +51,6 @@ export class ScheduleComponent implements OnInit {
     })
     .then(res => {
       this.sellerArray = res['obj'];
-      console.log(this.sellerArray.length)
     })
 
     this.paramsToSellerMultipleSelect = {
@@ -55,23 +58,66 @@ export class ScheduleComponent implements OnInit {
       choice: 'single', 
       placeholder: 'Vendedor', 
       description: ['participant', 'business_name'], 
-      value: ['participant', 'id'],
+      value: ['json','participant', 'id'],
       search: [{where: ['participant', 'profile'], value: 'seller'}],
       order: [['participant', 'business_name'], 'desc']
     }
 
-    this.paramsToBuyerMultipleSelect = {
-      route: 'participants-products', 
-      choice: 'single', 
-      placeholder: 'Comprador', 
-      description: ['participant', 'business_name'], 
-      value: ['participant', 'id'],
-      search: [{where: ['participant', 'profile'], value: 'buyer'}],
-      order: [['participant', 'business_name'], 'desc']
-    }
+    
+
+    this.laravelCrud.read({
+      route: 'matchs'
+    })
+    .then(res => {
+      this.matchArray = res['obj'];
+      this.makeList();
+    })
+  }
+
+  makeList = () => {
+    this.paramsToTableData = {
+      toolbar: {
+        title: "Lista de agendamentos",
+        delete: [{
+          route: '/main/schedule',
+          param: 'id'
+        }],
+        search: true
+      },
+      list: {
+        array: this.matchArray,
+        show: [['seller','business_name'], ['buyer','business_name'], ['window','time_start'] ],
+        header: ['Vendedor', 'Comprador', 'Hora de início'],
+        edit: {route: '/main/schedule/', param: 'id'},
+        order: [['seller','business_name'], 'desc'],
+        source: true
+      },
+      actionToolbar: {
+        language: 'pt-br'
+      }
+    };
   }
 
   sellerMultipleSelectEventEmitterHandle(e) {
-    console.log(e)
+    this.paramsToBuyerMultipleSelect = {
+      route: 'available-participant/' + e[0].value, 
+      choice: 'single', 
+      matrixLevelToStart: ['participant'],
+      placeholder: 'Comprador', 
+      description: ['business_name'], 
+      value: ['id'],
+      order: [['participant'], 'desc']
+    }
+
+    this.paramsToWindowMultipleSelect = {
+      route: 'available-participant/' + e[0].value, 
+      choice: 'single', 
+      matrixLevelToStart: ['windows'],
+      placeholder: 'Hora de início', 
+      description: ['time_start'], 
+      value: ['id'],
+      order: [['participant'], 'desc']
+    }
   }
+  
 }

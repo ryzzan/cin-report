@@ -73,10 +73,12 @@ export class TableDataComponent implements OnInit {
      */
     if(this.params.list) {
       if(!this.params.list.route) {
-        this.errors.push({
-          cod: "td-01",
-          message: "É preciso definir a rota de busca no banco. (params.list.route: any - ex.:['route'])"
-        });
+        if(!this.params.list.array) {
+          this.errors.push({
+            cod: "td-01",
+            message: "É preciso definir a rota de busca no banco. (params.list.route: any - ex.:['route'])"
+          });
+        }
       }
 
       if(!this.params.list.limit) {
@@ -374,14 +376,30 @@ export class TableDataComponent implements OnInit {
 
     //Filtered by property show in list object
     let filter = data.map((data) => {
-      let backgroundColor;
-      let color;
-      let field;
-      let fieldValue;
       let temp = [];
-      
-      for(let lim = this.params.list.show.length, i = 0; i < lim; i++){
-        temp.push(data[this.params.list.show[i]]);
+
+      for(let limToShow = this.params.list.show.length, j = 0; j < limToShow; j++) {
+        let backgroundColor;
+        let color;
+        let field;
+        let fieldValue;
+        
+        let tempShow;
+        let tempShow2;
+        for(let limToShow2 = this.params.list.show[j].length, l = 0; l < limToShow2; l++) {
+          if(tempShow == undefined) {
+            tempShow = data[this.params.list.show[j][l]];
+          } else {
+            tempShow2 = tempShow[this.params.list.show[j][l]];
+            tempShow = tempShow2;
+          }
+
+          if(!tempShow) {
+            console.log(data[this.params.list.show[j][l - 1]])
+          }
+        }
+
+        temp.push(tempShow);
       }
 
       return temp;
@@ -412,36 +430,67 @@ export class TableDataComponent implements OnInit {
   }
 
   readData = () => {
-    let readParams = {
-      route: this.params.list.route,
-      limit: this.params.list.limit,
-      order: this.params.list.order,
-      page: this.pageCurrent,
-      search: this.searchValue
+    if(this.params.list.route) {
+      let readParams = {
+        route: this.params.list.route,
+        limit: this.params.list.limit,
+        order: this.params.list.order,
+        page: this.pageCurrent,
+        search: this.searchValue
+      }
+      
+      this.isLoadingList = true;
+      
+      this.crud.read(readParams)
+      .then(res => {
+        this.isLoadingList = false;
+        
+        if(res['obj']) {
+          this.arraySource = res['obj']; 
+        } else {
+          this.arraySource = res;
+        }
+        
+        this.filterArrayKey(this.arraySource);
+
+        this.pageTotal = Math.ceil(this.arraySource.total/this.params.list.limit);
+        
+        if(this.arraySource.length < 1) {
+          this.msg = "Nada na lista";
+        }
+      })
+    } else {
+      if(this.params.list.array) {
+        let readParams = {
+          array: this.params.list.array,
+          limit: this.params.list.limit,
+          order: this.params.list.order,
+          page: this.pageCurrent,
+          search: this.searchValue
+        }
+        
+        this.isLoadingList = true;
+        
+        this.crud.read(readParams)
+        .then(res => {
+          this.isLoadingList = false;
+          
+          if(res['obj']) {
+            this.arraySource = res['obj']; 
+          } else {
+            this.arraySource = res;
+          }
+          
+          this.filterArrayKey(this.arraySource);
+  
+          this.pageTotal = Math.ceil(this.arraySource.total/this.params.list.limit);
+          
+          if(this.arraySource.length < 1) {
+            this.msg = "Nada na lista";
+          }
+        })
+      }
     }
-    console.log(readParams)
-
-    this.isLoadingList = true;
-
-    this.crud.read(readParams)
-    .then(res => {
-      console.log(res)
-      this.isLoadingList = false;
-      
-      if(res['obj']) {
-        this.arraySource = res['obj']; 
-      } else {
-        this.arraySource = res;
-      }
-      
-      this.filterArrayKey(this.arraySource);
-
-      this.pageTotal = Math.ceil(this.arraySource.total/this.params.list.limit);
-      
-      if(this.arraySource.length < 1) {
-        this.msg = "Nada na lista";
-      }
-    })
   }
   /**
    * Action area
